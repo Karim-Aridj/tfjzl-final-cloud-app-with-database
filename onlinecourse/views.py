@@ -150,12 +150,26 @@ def show_exam_result(request, course_id, submission_id):
         if question.is_get_score(selected_ids):
             total_score += question.grade
 
+    # Calculate percentage grade
+    grade = int((total_score / max_score * 100)) if max_score > 0 else 0
+
+    # Build per-question result list
+    question_results = []
+    for question in questions:
+        is_correct = question.is_get_score(selected_ids)
+        question_results.append({
+            'question': question,
+            'is_correct': is_correct,
+        })
+
     context = {
         'course': course,
         'submission': submission,
         'questions': questions,
+        'question_results': question_results,
         'selected_ids': selected_ids,
         'score': total_score,
         'max_score': max_score,
+        'grade': grade,
     }
     return render(request, "onlinecourse/exam_result_bootstrap.html", context=context)
